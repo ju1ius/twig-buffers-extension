@@ -1,0 +1,9 @@
+{% if mode == 'append' %}
+  {% append test %}
+    {{ value }}
+  {% endappend %}
+{% elseif mode == 'prepend' %}
+  {% prepend test %}
+    {{ value }}
+  {% endprepend %}
+{% endif %}

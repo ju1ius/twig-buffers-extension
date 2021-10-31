@@ -1,0 +1,9 @@
+{% extends "has/base.html.twig" %}
+
+{% block body %}
+  {% if buffer_exists('nope') %}
+    DEAD !
+  {% elseif buffer_exists('test') %}
+    {% append test 'child' %}
+  {% endif %}
+{% endblock %}

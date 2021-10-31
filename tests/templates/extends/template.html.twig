@@ -1,0 +1,7 @@
+{% extends 'extends/base.html.twig' %}
+
+{% block my_block %}
+  {% append test 'bar' %}
+  {% prepend test 'foo' %}
+  {% append test 'baz' %}
+{% endblock %}

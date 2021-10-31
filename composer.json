@@ -1,0 +1,28 @@
+{
+    "name": "ju1ius/twig-buffers-extension",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ju1ius",
+            "email": "jules.bernable@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ju1ius\\TwigBuffersExtension\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ju1ius\\Tests\\TwigBuffersExtension\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.0",
+        "twig/twig": "^3.0"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

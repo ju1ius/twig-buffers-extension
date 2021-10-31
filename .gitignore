@@ -1,0 +1,11 @@
+# composer
+/composer.lock
+/vendor/
+
+# phive
+/tools/*
+!/tools/.gitkeep
+
+# others
+/tmp/
+/tests/cache/

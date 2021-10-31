@@ -1,0 +1,16 @@
+{% buffer test %}
+
+{% embed 'embed/component.html.twig' with {
+  'mode': 'append',
+  'value': 'bar',
+} %}{% endembed %}
+
+{% embed 'embed/component.html.twig' with {
+  'mode': 'prepend',
+  'value': 'foo',
+} %}{% endembed %}
+
+{% embed 'embed/component.html.twig' with {
+  'mode': 'append',
+  'value': 'baz',
+} %}{% endembed %}
