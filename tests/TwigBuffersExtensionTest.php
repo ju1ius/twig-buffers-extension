@@ -3,9 +3,17 @@
 namespace ju1ius\Tests\TwigBuffersExtension;
 use ju1ius\TwigBuffersExtension\Exception\UnknownBuffer;
 use PHPUnit\Framework\Assert;
+use Twig\Error\SyntaxError;
 
 final class TwigBuffersExtensionTest extends ExtensionTestCase
 {
+    public function testClosingTagSyntax()
+    {
+        $this->expectException(SyntaxError::class);
+        $twig = $this->createEnvironment();
+        $twig->render('syntax/end-tag-mismatch.html.twig');
+    }
+
     public function testItRendersNothingWhenBufferIsEmpty()
     {
         $twig = $this->createEnvironment();
@@ -29,7 +37,7 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
 
     public function testEscapingWorks()
     {
-        $twig = $this->createEnvironment(true);
+        $twig = $this->createEnvironment();
         $context = ['xss' => '<script>die();</script>'];
 
         $capturing = $twig->render('escaping/capturing.html.twig', $context);
