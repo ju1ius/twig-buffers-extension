@@ -2,9 +2,7 @@
 
 namespace ju1ius\TwigBuffersExtension\Node;
 
-use Twig\Node\NodeCaptureInterface;
-
-final class AppendNode extends BufferInsertionNode implements NodeCaptureInterface
+final class AppendNode extends BufferInsertionNode
 {
     protected function getMethod(): string
     {

@@ -27,6 +27,18 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
         Assert::assertSame('foo bar baz', $this->normalizeWhitespace($result));
     }
 
+    public function testEscapingWorks()
+    {
+        $twig = $this->createEnvironment(true);
+        $context = ['xss' => '<script>die();</script>'];
+
+        $capturing = $twig->render('escaping/capturing.html.twig', $context);
+        Assert::assertSame('&lt;script&gt;die();&lt;/script&gt;', $this->normalizeWhitespace($capturing));
+
+        $nonCapturing = $twig->render('escaping/non-capturing.html.twig', $context);
+        Assert::assertSame('&lt;script&gt;die();&lt;/script&gt;', $this->normalizeWhitespace($nonCapturing));
+    }
+
     public function testInsertingFromIncludedTemplate()
     {
         $twig = $this->createEnvironment();

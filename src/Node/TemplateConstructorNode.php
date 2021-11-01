@@ -15,11 +15,14 @@ final class TemplateConstructorNode extends Node
 
     public function compile(Compiler $compiler)
     {
+        $code = <<<'PHP'
+        $this->bufferingContext = $this->extensions['%s']->getContext();
+        PHP;
+
         $compiler
             ->raw("\n")
-            ->write('$this->bufferingContext = $env->getExtension(')
-            ->string(TwigBuffersExtension::class)
-            ->raw(')->getContext();')
-            ->raw("\n");
+            ->write(sprintf($code, TwigBuffersExtension::class))
+            ->raw("\n")
+        ;
     }
 }
