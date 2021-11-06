@@ -17,8 +17,8 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         $stream = $this->parser->getStream();
         $name = $stream->expect(Token::NAME_TYPE)->getValue();
         $id = null;
-        if ($idToken = $stream->nextIf(Token::NAME_TYPE)) {
-            $id = $idToken->getValue();
+        if ($stream->nextIf(Token::NAME_TYPE, 'as')) {
+            $id = $stream->expect(Token::NAME_TYPE)->getValue();
         }
 
         $this->parser->pushLocalScope();
