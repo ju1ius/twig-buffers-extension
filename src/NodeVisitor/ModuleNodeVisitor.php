@@ -6,7 +6,6 @@ use ju1ius\TwigBuffersExtension\Node\BufferReferenceNode;
 use ju1ius\TwigBuffersExtension\Node\ModuleBodyNode;
 use ju1ius\TwigBuffersExtension\Node\TemplateClassFooterNode;
 use ju1ius\TwigBuffersExtension\Node\TemplateConstructorNode;
-use SplStack;
 use Twig\Environment;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;

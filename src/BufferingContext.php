@@ -59,26 +59,22 @@ final class BufferingContext
 
     public function append(string $bufferName, $content, string $uid = null)
     {
-        $buffer = $this->get($bufferName);
-        $buffer->append($content, $uid);
+        $this->get($bufferName)->append($content, $uid);
     }
 
     public function prepend(string $bufferName, $content, string $uid = null)
     {
-        $buffer = $this->get($bufferName);
-        $buffer->prepend($content, $uid);
+        $this->get($bufferName)->prepend($content, $uid);
     }
 
     public function clear(string $bufferName)
     {
-        $buffer = $this->get($bufferName);
-        $buffer->clear();
+        $this->get($bufferName)->clear();
     }
 
     public function didUniquelyInsert(string $bufferName, string $uid): bool
     {
-        $buffer = $this->get($bufferName);
-        return $buffer->didInsert($uid);
+        return $this->get($bufferName)->didInsert($uid);
     }
 
     private function flush(string $templateBuffer): void

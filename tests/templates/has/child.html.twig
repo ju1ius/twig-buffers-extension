@@ -4,6 +4,6 @@
   {% if buffer_exists('nope') %}
     DEAD !
   {% elseif buffer_exists('test') %}
-    {% append test 'child' %}
+    {% append to test 'child' %}
   {% endif %}
 {% endblock %}

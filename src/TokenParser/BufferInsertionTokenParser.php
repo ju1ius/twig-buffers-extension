@@ -3,7 +3,6 @@
 namespace ju1ius\TwigBuffersExtension\TokenParser;
 
 use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
-use Twig\Error\SyntaxError;
 use Twig\Node\Node;
 use Twig\Node\PrintNode;
 use Twig\Token;
@@ -15,7 +14,10 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
+
+        $stream->expect(Token::NAME_TYPE, 'to');
         $name = $stream->expect(Token::NAME_TYPE)->getValue();
+
         $id = null;
         if ($stream->nextIf(Token::NAME_TYPE, 'as')) {
             $id = $stream->expect(Token::NAME_TYPE)->getValue();
@@ -27,21 +29,6 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         if ($stream->nextIf(Token::BLOCK_END_TYPE)) {
             $capture = true;
             $body = $this->parser->subparse(fn(Token $token) => $token->test("end{$this->getTag()}"), true);
-            if ($token = $stream->nextIf(Token::NAME_TYPE)) {
-                $value = $token->getValue();
-                if ($value !== $name) {
-                    throw new SyntaxError(
-                        sprintf(
-                            "Expected end%s for buffer '%s', but got %s",
-                            $this->getTag(),
-                            $name,
-                            $value,
-                        ),
-                        $stream->getCurrent()->getLine(),
-                        $stream->getSourceContext(),
-                    );
-                }
-            }
         } else {
             $body = new Node([
                 new PrintNode($this->parser->getExpressionParser()->parseExpression(), $lineno),

@@ -1,9 +1,9 @@
-{% prepend test as some_unique_id %}
+{% prepend to test as some_unique_id %}
   <head>HEAD</head>
 {% endprepend %}
 
-{% append test %}
+{% append to test %}
   {{ value }}
 {% endappend %}
 
-{% append test as some_unique_id 'i shall not be seen' %}
+{% append to test as some_unique_id 'i shall not be seen' %}
