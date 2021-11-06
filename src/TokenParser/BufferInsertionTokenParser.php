@@ -15,6 +15,12 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
 
+        $ignoreMissing = false;
+        if ($stream->nextIf(Token::OPERATOR_TYPE, 'or')) {
+            $stream->expect(Token::NAME_TYPE, 'ignore');
+            $ignoreMissing = true;
+        }
+
         $stream->expect(Token::NAME_TYPE, 'to');
         $name = $stream->expect(Token::NAME_TYPE)->getValue();
 
@@ -38,8 +44,8 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         $this->parser->popLocalScope();
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return $this->createNode($name, $id, $body, $lineno);
+        return $this->createNode($name, $body, $id, $ignoreMissing, $lineno);
     }
 
-    abstract protected function createNode(string $name, ?string $id, $body, int $lineno): BufferInsertionNode;
+    abstract protected function createNode(string $name, Node $body, ?string $id, bool $ignoreMissing, int $lineno): BufferInsertionNode;
 }

@@ -16,15 +16,29 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
     public function testInsertion()
     {
         $twig = $this->createEnvironment();
-        $result = $twig->render('insertion.html.twig');
+        $result = $twig->render('insertion/insertion.html.twig');
         Assert::assertSame('foobarbaz', $result);
     }
 
     public function testInsertionUsingCapture()
     {
         $twig = $this->createEnvironment();
-        $result = $twig->render('capture.html.twig');
+        $result = $twig->render('insertion/capture.html.twig');
         Assert::assertSame('foo bar baz', $this->normalizeWhitespace($result));
+    }
+
+    public function testInsertionThrowsOnUnknownBuffer()
+    {
+        $twig = $this->createEnvironment();
+        $this->expectException(UnknownBuffer::class);
+        $twig->render('insertion/unknown-buffer.html.twig');
+    }
+
+    public function testInsertOrIgnore()
+    {
+        $twig = $this->createEnvironment(true);
+        $result = $twig->render('insertion/ignore-missing.html.twig');
+        Assert::assertSame('', $this->normalizeWhitespace($result));
     }
 
     public function testEscapingWorks()
@@ -86,7 +100,7 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
     public function testOneBufferWithMultipleInsertionPoints()
     {
         $twig = $this->createEnvironment();
-        $result = $twig->render('multiple-insertion-points.html.twig');
+        $result = $twig->render('insertion/multiple-insertion-points.html.twig');
         Assert::assertSame('HEAD -- BODY -- FOOTER', $this->normalizeWhitespace($result));
     }
 

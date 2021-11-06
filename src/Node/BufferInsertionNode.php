@@ -8,11 +8,17 @@ use Twig\Node\Node;
 
 abstract class BufferInsertionNode extends Node
 {
-    public function __construct(string $name, ?string $id, Node $body, int $lineno = 0, string $tag = null)
-    {
+    public function __construct(
+        string $name,
+        Node $body,
+        ?string $id,
+        bool $ignoreMissing,
+        int $lineno = 0,
+        string $tag = null
+    ) {
         parent::__construct(
             ['body' => $body],
-            ['name' => $name, 'id' => $id],
+            ['name' => $name, 'id' => $id, 'ignore_missing' => $ignoreMissing],
             $lineno,
             $tag
         );
@@ -26,14 +32,28 @@ abstract class BufferInsertionNode extends Node
 
         $bufferName = $this->getAttribute('name');
         $uid = $this->getAttribute('id');
+        $ignoreMissing = $this->getAttribute('ignore_missing');
+
+        $conditions = [];
+
+        if ($ignoreMissing) {
+            $conditions[] = sprintf(
+                "\$this->bufferingContext->has('%s')",
+                $bufferName,
+            );
+        }
 
         if ($uid) {
+            $conditions[] = sprintf(
+                "!\$this->bufferingContext->didUniquelyInsert('%s', '%s')",
+                $bufferName,
+                $uid,
+            );
+        }
+
+        if ($conditions) {
             $compiler
-                ->write(sprintf(
-                    "if (!\$this->bufferingContext->didUniquelyInsert('%s', '%s')) {\n",
-                    $bufferName,
-                    $uid,
-                ))
+                ->write(sprintf("if (%s) {\n", implode(' && ', $conditions)))
                 ->indent()
             ;
         }
@@ -63,7 +83,7 @@ abstract class BufferInsertionNode extends Node
             ->raw("\n")
         ;
 
-        if ($uid) {
+        if ($conditions) {
             $compiler
                 ->outdent()
                 ->write("}\n")
