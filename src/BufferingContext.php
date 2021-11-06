@@ -75,6 +75,12 @@ final class BufferingContext
         $buffer->clear();
     }
 
+    public function didUniquelyInsert(string $bufferName, string $uid): bool
+    {
+        $buffer = $this->get($bufferName);
+        return $buffer->didInsert($uid);
+    }
+
     private function flush(string $templateBuffer): void
     {
         $search = [];

@@ -30,6 +30,11 @@ final class Buffer
         array_unshift($this->contents, $content);
     }
 
+    public function didInsert(string $uid): bool
+    {
+        return isset($this->uids[$uid]);
+    }
+
     public function __toString()
     {
         return implode('', $this->contents);

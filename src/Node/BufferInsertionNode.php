@@ -24,6 +24,20 @@ abstract class BufferInsertionNode extends Node
     {
         $compiler->addDebugInfo($this);
 
+        $bufferName = $this->getAttribute('name');
+        $uid = $this->getAttribute('id');
+
+        if ($uid) {
+            $compiler
+                ->write(sprintf(
+                    "if (!\$this->bufferingContext->didUniquelyInsert('%s', '%s')) {\n",
+                    $bufferName,
+                    $uid,
+                ))
+                ->indent()
+            ;
+        }
+
         if ($compiler->getEnvironment()->isDebug()) {
             $compiler->write("ob_start();\n");
         } else {
@@ -43,10 +57,17 @@ abstract class BufferInsertionNode extends Node
             ->write(...Lines::split(sprintf(
                 $code,
                 $this->getMethod(),
-                $this->getAttribute('name'),
-                ($id = $this->getAttribute('id')) ? "'{$id}'" : 'null',
+                $bufferName,
+                $uid ? "'{$uid}'" : 'null',
             )))
             ->raw("\n")
         ;
+
+        if ($uid) {
+            $compiler
+                ->outdent()
+                ->write("}\n")
+            ;
+        }
     }
 }
