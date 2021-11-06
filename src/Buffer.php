@@ -2,7 +2,7 @@
 
 namespace ju1ius\TwigBuffersExtension;
 
-final class Buffer
+final class Buffer implements \Stringable
 {
     private array $contents = [];
     private array $uids = [];
@@ -27,7 +27,7 @@ final class Buffer
             if (isset($this->uids[$uid])) return;
             $this->uids[$uid] = true;
         }
-        array_unshift($this->contents, $content);
+        \array_unshift($this->contents, $content);
     }
 
     public function didInsert(string $uid): bool
@@ -35,8 +35,13 @@ final class Buffer
         return isset($this->uids[$uid]);
     }
 
+    public function isEmpty(): bool
+    {
+        return \count($this->contents) === 0;
+    }
+
     public function __toString()
     {
-        return implode('', $this->contents);
+        return \implode('', $this->contents);
     }
 }

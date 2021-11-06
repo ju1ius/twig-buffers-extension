@@ -44,6 +44,7 @@ final class TwigBuffersExtension extends AbstractExtension
         return [
             new TwigFunction('clear_buffer', [$this, 'clearBuffer']),
             new TwigFunction('buffer_exists', [$this, 'hasBuffer']),
+            new TwigFunction('buffer_is_empty', [$this, 'bufferIsEmpty']),
         ];
     }
 
@@ -55,5 +56,10 @@ final class TwigBuffersExtension extends AbstractExtension
     public function hasBuffer(string $bufferName): bool
     {
         return $this->bufferingContext->has($bufferName);
+    }
+
+    public function bufferIsEmpty(string $bufferName): bool
+    {
+        return $this->bufferingContext->isEmpty($bufferName);
     }
 }

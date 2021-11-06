@@ -124,4 +124,18 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
         $result = $twig->render('has/child.html.twig');
         Assert::assertSame('<buffer>child</buffer>', $this->normalizeWhitespace($result));
     }
+
+    public function testIsEmpty()
+    {
+        $twig = $this->createEnvironment();
+        $result = $twig->render('is-empty/existing.html.twig');
+        Assert::assertSame('buffer is empty', $this->normalizeWhitespace($result));
+    }
+
+    public function testIsEmptyReturnsTrueForNonExistingBuffer()
+    {
+        $twig = $this->createEnvironment();
+        $result = $twig->render('is-empty/non-existing.html.twig');
+        Assert::assertSame('buffer is empty', $this->normalizeWhitespace($result));
+    }
 }

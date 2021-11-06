@@ -72,6 +72,14 @@ final class BufferingContext
         $this->get($bufferName)->clear();
     }
 
+    public function isEmpty(string $bufferName): bool
+    {
+        if ($buffer = $this->buffers[$bufferName] ?? null) {
+            return $buffer->isEmpty();
+        }
+        return true;
+    }
+
     public function didUniquelyInsert(string $bufferName, string $uid): bool
     {
         return $this->get($bufferName)->didInsert($uid);
