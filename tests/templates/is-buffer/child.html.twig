@@ -1,0 +1,9 @@
+{% extends "is-buffer/base.html.twig" %}
+
+{% block body %}
+  {% if 'nope' is buffer %}
+    DEAD !
+  {% elseif 'test' is buffer %}
+    {% append to test 'child' %}
+  {% endif %}
+{% endblock %}

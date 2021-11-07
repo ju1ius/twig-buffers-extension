@@ -36,9 +36,16 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
 
     public function testInsertOrIgnore()
     {
-        $twig = $this->createEnvironment(true);
+        $twig = $this->createEnvironment();
         $result = $twig->render('insertion/ignore-missing.html.twig');
         Assert::assertSame('', $this->normalizeWhitespace($result));
+    }
+
+    public function testInsertOrCreate()
+    {
+        $twig = $this->createEnvironment();
+        $result = $twig->render('insertion/create-missing.html.twig');
+        Assert::assertSame('<buffer>foobarbaz</buffer>', $this->normalizeWhitespace($result));
     }
 
     public function testEscapingWorks()
@@ -118,10 +125,10 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
         $twig->render('clear/clear-non-existing.html.twig');
     }
 
-    public function testHasBufferInChildTemplate()
+    public function testIsBufferInChildTemplate()
     {
         $twig = $this->createEnvironment();
-        $result = $twig->render('has/child.html.twig');
+        $result = $twig->render('is-buffer/child.html.twig');
         Assert::assertSame('<buffer>child</buffer>', $this->normalizeWhitespace($result));
     }
 

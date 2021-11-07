@@ -15,10 +15,13 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
 
-        $ignoreMissing = false;
+        $onMissing = BufferInsertionNode::ON_MISSING_ERROR;
         if ($stream->nextIf(Token::OPERATOR_TYPE, 'or')) {
-            $stream->expect(Token::NAME_TYPE, 'ignore');
-            $ignoreMissing = true;
+            if ($stream->nextIf(Token::NAME_TYPE, 'ignore')) {
+                $onMissing = BufferInsertionNode::ON_MISSING_IGNORE;
+            } else if ($stream->nextIf(Token::NAME_TYPE, 'create')) {
+                $onMissing = BufferInsertionNode::ON_MISSING_CREATE;
+            }
         }
 
         $stream->expect(Token::NAME_TYPE, 'to');
@@ -36,16 +39,20 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
             $capture = true;
             $body = $this->parser->subparse(fn(Token $token) => $token->test("end{$this->getTag()}"), true);
         } else {
-            $body = new Node([
-                new PrintNode($this->parser->getExpressionParser()->parseExpression(), $lineno),
-            ]);
+            $body = new PrintNode($this->parser->getExpressionParser()->parseExpression(), $lineno);
         }
 
         $this->parser->popLocalScope();
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return $this->createNode($name, $body, $id, $ignoreMissing, $lineno);
+        return $this->createNode($name, $body, $id, $onMissing, $lineno);
     }
 
-    abstract protected function createNode(string $name, Node $body, ?string $id, bool $ignoreMissing, int $lineno): BufferInsertionNode;
+    abstract protected function createNode(
+        string $name,
+        Node $body,
+        ?string $id,
+        int $onMissing,
+        int $lineno,
+    ): BufferInsertionNode;
 }

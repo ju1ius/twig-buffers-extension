@@ -17,9 +17,9 @@ final class PrependTokenParser extends BufferInsertionTokenParser
         string $name,
         Node $body,
         ?string $id,
-        bool $ignoreMissing,
-        int $lineno
+        int $onMissing,
+        int $lineno,
     ): BufferInsertionNode {
-        return new PrependNode($name, $body, $id, $ignoreMissing, $lineno, $this->getTag());
+        return new PrependNode($name, $body, $id, $onMissing, $lineno, $this->getTag());
     }
 }

@@ -8,11 +8,6 @@ use Twig\Node\Node;
 
 final class TemplateConstructorNode extends Node
 {
-    public function __construct(array $buffers)
-    {
-        parent::__construct([], ['buffers' => $buffers]);
-    }
-
     public function compile(Compiler $compiler)
     {
         $code = <<<'PHP'

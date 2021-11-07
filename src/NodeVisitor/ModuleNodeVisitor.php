@@ -2,6 +2,7 @@
 
 namespace ju1ius\TwigBuffersExtension\NodeVisitor;
 
+use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
 use ju1ius\TwigBuffersExtension\Node\BufferReferenceNode;
 use ju1ius\TwigBuffersExtension\Node\ModuleBodyNode;
 use ju1ius\TwigBuffersExtension\Node\TemplateClassFooterNode;
@@ -14,12 +15,15 @@ use Twig\NodeVisitor\NodeVisitorInterface;
 final class ModuleNodeVisitor implements NodeVisitorInterface
 {
     private array $bufferReferences = [];
+    private array $buffersToOpen = [];
 
     public function enterNode(Node $node, Environment $env): Node
     {
         if ($node instanceof ModuleNode) {
             $this->bufferReferences = [];
+            $this->buffersToOpen = [];
         }
+
         return $node;
     }
 
@@ -27,10 +31,15 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
     {
         if ($node instanceof BufferReferenceNode) {
             $this->bufferReferences[] = $node->getAttribute('name');
-        }
-        if ($node instanceof ModuleNode) {
+        } else if (
+            $node instanceof BufferInsertionNode
+            && $node->getAttribute('on_missing') === BufferInsertionNode::ON_MISSING_CREATE
+        ) {
+            $this->buffersToOpen[] = $node->getAttribute('name');
+        } else if ($node instanceof ModuleNode) {
             $this->registerModuleBuffers($node);
         }
+
         return $node;
     }
 
@@ -41,16 +50,15 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
 
     private function registerModuleBuffers(ModuleNode $module)
     {
-        $references = array_unique($this->bufferReferences);
-
         $footer = $module->getNode('class_end');
-        $footer->setNode('buffers', new TemplateClassFooterNode($references));
+        $footer->setNode('buffers', new TemplateClassFooterNode());
 
         $constructor = $module->getNode('constructor_end');
-        $constructor->setNode('buffers', new TemplateConstructorNode($references));
+        $constructor->setNode('buffers', new TemplateConstructorNode());
 
-        if (!$references) return;
+        $references = array_unique($this->bufferReferences);
+        $buffersToOpen = array_unique($this->buffersToOpen);
         $body = $module->getNode('body');
-        $module->setNode('body', new ModuleBodyNode($body));
+        $module->setNode('body', new ModuleBodyNode($body, $references, $buffersToOpen));
     }
 }

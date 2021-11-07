@@ -8,6 +8,7 @@ use ju1ius\TwigBuffersExtension\TokenParser\BufferTokenParser;
 use ju1ius\TwigBuffersExtension\TokenParser\PrependTokenParser;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
+use Twig\TwigTest;
 
 final class TwigBuffersExtension extends AbstractExtension
 {
@@ -43,8 +44,14 @@ final class TwigBuffersExtension extends AbstractExtension
     {
         return [
             new TwigFunction('clear_buffer', [$this, 'clearBuffer']),
-            new TwigFunction('buffer_exists', [$this, 'hasBuffer']),
-            new TwigFunction('buffer_is_empty', [$this, 'bufferIsEmpty']),
+        ];
+    }
+
+    public function getTests()
+    {
+        return [
+            new TwigTest('buffer', [$this, 'hasBuffer']),
+            new TwigTest('empty_buffer', [$this, 'bufferIsEmpty']),
         ];
     }
 

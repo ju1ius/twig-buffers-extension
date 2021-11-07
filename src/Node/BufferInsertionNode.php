@@ -8,17 +8,21 @@ use Twig\Node\Node;
 
 abstract class BufferInsertionNode extends Node
 {
+    const ON_MISSING_ERROR = 0;
+    const ON_MISSING_IGNORE = 1;
+    const ON_MISSING_CREATE = 2;
+
     public function __construct(
         string $name,
         Node $body,
         ?string $id,
-        bool $ignoreMissing,
+        int $onMissing = self::ON_MISSING_ERROR,
         int $lineno = 0,
         string $tag = null
     ) {
         parent::__construct(
             ['body' => $body],
-            ['name' => $name, 'id' => $id, 'ignore_missing' => $ignoreMissing],
+            ['name' => $name, 'id' => $id, 'on_missing' => $onMissing],
             $lineno,
             $tag
         );
@@ -32,11 +36,11 @@ abstract class BufferInsertionNode extends Node
 
         $bufferName = $this->getAttribute('name');
         $uid = $this->getAttribute('id');
-        $ignoreMissing = $this->getAttribute('ignore_missing');
+        $onMissing = $this->getAttribute('on_missing');
 
         $conditions = [];
 
-        if ($ignoreMissing) {
+        if ($onMissing === self::ON_MISSING_IGNORE) {
             $conditions[] = sprintf(
                 "\$this->bufferingContext->has('%s')",
                 $bufferName,
@@ -45,7 +49,7 @@ abstract class BufferInsertionNode extends Node
 
         if ($uid) {
             $conditions[] = sprintf(
-                "!\$this->bufferingContext->didUniquelyInsert('%s', '%s')",
+                "!\$this->bufferingContext->didUniqueInsert('%s', '%s')",
                 $bufferName,
                 $uid,
             );
@@ -59,7 +63,9 @@ abstract class BufferInsertionNode extends Node
         }
 
         if ($compiler->getEnvironment()->isDebug()) {
+            // @codeCoverageIgnoreStart
             $compiler->write("ob_start();\n");
+            // @codeCoverageIgnoreEnd
         } else {
             $compiler->write("ob_start(fn() => '');\n");
         }

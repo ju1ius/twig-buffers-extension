@@ -8,11 +8,6 @@ use Twig\Node\Node;
 
 final class TemplateClassFooterNode extends Node
 {
-    public function __construct(array $buffers)
-    {
-        parent::__construct([], ['buffers' => $buffers]);
-    }
-
     public function compile(Compiler $compiler)
     {
         $this->compileBuffersDeclaration($compiler);
@@ -23,16 +18,12 @@ final class TemplateClassFooterNode extends Node
         $code = <<<'PHP'
 
             private %s $bufferingContext;
-            private array $bufferReferences = [%s];
 
         PHP;
-
-        $buffers = implode(', ', array_map(fn($name) => "'{$name}'", $this->getAttribute('buffers')));
 
         $compiler->raw(sprintf(
             $code,
             BufferingContext::class,
-            $buffers,
         ));
     }
 }

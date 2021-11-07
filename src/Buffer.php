@@ -4,7 +4,13 @@ namespace ju1ius\TwigBuffersExtension;
 
 final class Buffer implements \Stringable
 {
+    /**
+     * @var \Stringable[]
+     */
     private array $contents = [];
+    /**
+     * @var array<string, true>
+     */
     private array $uids = [];
 
     public function clear(): void
@@ -12,7 +18,7 @@ final class Buffer implements \Stringable
         $this->contents = [];
     }
 
-    public function append($content, string $uid = null): void
+    public function append(string|\Stringable $content, string $uid = null): void
     {
         if ($uid) {
             if (isset($this->uids[$uid])) return;
@@ -21,7 +27,7 @@ final class Buffer implements \Stringable
         $this->contents[] = $content;
     }
 
-    public function prepend($content, string $uid = null): void
+    public function prepend(string|\Stringable $content, string $uid = null): void
     {
         if ($uid) {
             if (isset($this->uids[$uid])) return;

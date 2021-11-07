@@ -9,14 +9,11 @@ use SplStack;
 final class BufferingContext
 {
     /**
-     * @var SplStack
-     */
-    private SplStack $stack;
-
-    /**
      * @var array<string, Buffer>
      */
     private array $buffers = [];
+
+    private \SplStack $stack;
 
     #[Pure]
     public function __construct()
@@ -24,24 +21,25 @@ final class BufferingContext
         $this->stack = new SplStack();
     }
 
-    /**
-     * @param string[] $bufferReferences
-     */
-    public function push(array $bufferReferences)
+    public function enter(string ...$bufferNames): void
     {
-        foreach ($bufferReferences as $reference) {
-            $this->emplace($reference);
+        foreach ($bufferNames as $bufferName) {
+            if (!isset($this->buffers[$bufferName])) {
+                $this->buffers[$bufferName] = new Buffer();
+            }
         }
-        $this->stack->push(null);
+        $this->stack->push($bufferNames);
     }
 
-    public function pop(string $templateBuffer)
+    public function leave(string $templateBuffer = null, string ...$references): void
     {
+        match($templateBuffer) {
+            '', null => null,
+            default => $this->flush($templateBuffer, $references),
+        };
         $this->stack->pop();
         if ($this->stack->isEmpty()) {
-            $this->flush($templateBuffer);
-        } else {
-            echo $templateBuffer;
+            $this->buffers = [];
         }
     }
 
@@ -57,17 +55,17 @@ final class BufferingContext
         return "<!-- buffer:{$hash} -->";
     }
 
-    public function append(string $bufferName, $content, string $uid = null)
+    public function append(string $bufferName, $content, string $uid = null): void
     {
         $this->get($bufferName)->append($content, $uid);
     }
 
-    public function prepend(string $bufferName, $content, string $uid = null)
+    public function prepend(string $bufferName, $content, string $uid = null): void
     {
         $this->get($bufferName)->prepend($content, $uid);
     }
 
-    public function clear(string $bufferName)
+    public function clear(string $bufferName): void
     {
         $this->get($bufferName)->clear();
     }
@@ -80,30 +78,22 @@ final class BufferingContext
         return true;
     }
 
-    public function didUniquelyInsert(string $bufferName, string $uid): bool
+    public function didUniqueInsert(string $bufferName, string $uid): bool
     {
         return $this->get($bufferName)->didInsert($uid);
     }
 
-    private function flush(string $templateBuffer): void
+    private function flush(string $templateBuffer, array $references): void
     {
         $search = [];
         $replace = [];
-        foreach ($this->buffers as $name => $buffer) {
+        foreach ($references as $bufferName) {
+            $buffer = $this->get($bufferName);
             $hash = spl_object_hash($buffer);
             $search[] = "<!-- buffer:{$hash} -->";
             $replace[] = (string)$buffer;
         }
         echo str_replace($search, $replace, $templateBuffer);
-        $this->buffers = [];
-    }
-
-    private function emplace(string $name): Buffer
-    {
-        if (!isset($this->buffers[$name])) {
-            $this->buffers[$name] = new Buffer();
-        }
-        return $this->buffers[$name];
     }
 
     private function get(string $bufferName): Buffer
