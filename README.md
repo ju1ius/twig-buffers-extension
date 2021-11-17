@@ -186,30 +186,14 @@ You can tag insertions with a unique id in order to
 prevent the same content to be inserted more than once.
 
 ```twig
-{% macro search_button(text) %}
-  <button aria-controls="search-dialog">{{ text }}</button>
-  {% append to dialogs as search_dialog %}
-    <dialog id="search-dialog">...</dialog>
-  {% endappend %}
-{% endmacro %}
+<p>{% buffer my_buffer %}</p>
 
-<header>
-  {{ _self.search_button('Search from header') }}
-</header>
-<footer>
-  {{ _self.search_button('Search from footer') }}
-</footer>
-{% buffer dialogs %}
+{% for character in 'A'..'Z' %}
+  {% append to my_buffer as some_unique_id character %}
+{% endfor %}
 ```
-
 ```html
-<header>
-  <button aria-controls="search-dialog">Search from header</button>
-</header>
-<footer>
-  <button aria-controls="search-dialog">Search from footer</button>
-</footer>
-<dialog id="search-dialog">...</dialog>
+<p>A</p>
 ```
 
 ## Clearing the contents of a buffer
