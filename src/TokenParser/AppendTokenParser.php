@@ -8,7 +8,7 @@ use Twig\Node\Node;
 
 final class AppendTokenParser extends BufferInsertionTokenParser
 {
-    public function getTag()
+    public function getTag(): string
     {
         return 'append';
     }

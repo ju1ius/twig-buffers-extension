@@ -15,6 +15,7 @@ class ExtensionTestCase extends TestCase
         $twig = new Environment($loader, [
             'cache' => $cache ? __DIR__ . '/cache' : false,
             'debug' => false,
+            'strict_variables' => true,
         ]);
         $twig->addExtension(new TwigBuffersExtension());
         return $twig;

@@ -48,6 +48,20 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
         Assert::assertSame('<buffer>foobarbaz</buffer>', $this->normalizeWhitespace($result));
     }
 
+    public function testJoin()
+    {
+        $twig = $this->createEnvironment();
+        $result = $twig->render('join/join.html.twig');
+        Assert::assertSame('<buffer>foo, bar, baz</buffer>', $this->normalizeWhitespace($result));
+    }
+
+    public function testJoinWithFinalGlue()
+    {
+        $twig = $this->createEnvironment();
+        $result = $twig->render('join/final-glue.html.twig');
+        Assert::assertSame('<buffer>foo, bar & baz</buffer>', $this->normalizeWhitespace($result));
+    }
+
     public function testEscapingWorks()
     {
         $twig = $this->createEnvironment();

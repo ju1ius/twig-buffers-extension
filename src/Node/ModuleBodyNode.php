@@ -66,11 +66,7 @@ final class ModuleBodyNode extends Node
     {
         $references = $this->getAttribute('references');
         if ($references) {
-            $names = array_map(fn($name) => "'{$name}'", $references);
-            return sprintf(
-                "\$this->bufferingContext->leave(ob_get_clean(), %s);\n",
-                implode(', ', $names)
-            );
+            return "\$this->bufferingContext->leave(ob_get_clean());\n";
         }
 
         return "\$this->bufferingContext->leave();\n";

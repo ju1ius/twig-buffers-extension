@@ -1,0 +1,7 @@
+{% set glue, final_glue = ', ', ' & ' %}
+
+<buffer>{% buffer test joined by glue, final_glue %}</buffer>
+
+{% append to test 'foo' %}
+{% append to test 'bar' %}
+{% append to test 'baz' %}

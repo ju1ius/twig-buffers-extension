@@ -2,12 +2,22 @@
 
 namespace ju1ius\TwigBuffersExtension;
 
-final class Buffer implements \Stringable
+use Stringable;
+
+final class Buffer implements Stringable
 {
     /**
-     * @var \Stringable[]
+     * @var string|Stringable[]
      */
-    private array $contents = [];
+    private array $head = [];
+
+    /**
+     * @var string|Stringable[]
+     */
+    private array $tail = [];
+
+    private int $length = 0;
+
     /**
      * @var array<string, true>
      */
@@ -15,25 +25,28 @@ final class Buffer implements \Stringable
 
     public function clear(): void
     {
-        $this->contents = [];
+        $this->head = $this->tail = $this->uids = [];
+        $this->length = 0;
     }
 
-    public function append(string|\Stringable $content, string $uid = null): void
+    public function append(string|Stringable $content, string $uid = null): void
     {
         if ($uid) {
             if (isset($this->uids[$uid])) return;
             $this->uids[$uid] = true;
         }
-        $this->contents[] = $content;
+        $this->tail[] = $content;
+        $this->length++;
     }
 
-    public function prepend(string|\Stringable $content, string $uid = null): void
+    public function prepend(string|Stringable $content, string $uid = null): void
     {
         if ($uid) {
             if (isset($this->uids[$uid])) return;
             $this->uids[$uid] = true;
         }
-        \array_unshift($this->contents, $content);
+        $this->head[] = $content;
+        $this->length++;
     }
 
     public function didInsert(string $uid): bool
@@ -43,11 +56,21 @@ final class Buffer implements \Stringable
 
     public function isEmpty(): bool
     {
-        return \count($this->contents) === 0;
+        return $this->length === 0;
+    }
+
+    public function join(string|Stringable $glue = '', string|Stringable $finalGlue = null): string
+    {
+        $contents = \array_merge($this->head, $this->tail);
+        if ($finalGlue === null) {
+            return \implode($glue, $contents);
+        }
+        $tail = \array_pop($contents);
+        return \implode($glue, $contents) . $finalGlue . $tail;
     }
 
     public function __toString()
     {
-        return \implode('', $this->contents);
+        return $this->join();
     }
 }

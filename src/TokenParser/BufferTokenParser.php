@@ -12,12 +12,22 @@ final class BufferTokenParser extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
         $name = $stream->expect(Token::NAME_TYPE)->getValue();
+
+        $glue = $finalGlue = null;
+        if ($stream->nextIf(Token::NAME_TYPE, 'joined')) {
+            $stream->expect(Token::NAME_TYPE, 'by');
+            $glue = $this->parser->getExpressionParser()->parseExpression();
+            if ($stream->nextIf(Token::PUNCTUATION_TYPE, ',')) {
+                $finalGlue = $this->parser->getExpressionParser()->parseExpression();
+            }
+        }
+
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new BufferReferenceNode($name, $token->getLine());
+        return new BufferReferenceNode($name, $glue, $finalGlue, $token->getLine(), $this->getTag());
     }
 
-    public function getTag()
+    public function getTag(): string
     {
         return 'buffer';
     }
