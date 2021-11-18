@@ -24,7 +24,7 @@ abstract class BufferInsertionNode extends Node
             ['body' => $body],
             ['name' => $name, 'id' => $id, 'on_missing' => $onMissing],
             $lineno,
-            $tag
+            $tag,
         );
     }
 

@@ -34,12 +34,12 @@ final class BufferingContext
         $this->scopes->push(new Scope());
     }
 
-    public function leave(string $templateBuffer = null): void
+    public function leave(string $outputBuffer): void
     {
         $scope = $this->scopes->pop();
-        match ($templateBuffer) {
-            '', null => null,
-            default => $this->flush($templateBuffer, $scope),
+        match ($outputBuffer) {
+            '' => null,
+            default => $this->flush($outputBuffer, $scope),
         };
         if ($this->scopes->isEmpty()) {
             $this->buffers = [];
@@ -89,15 +89,20 @@ final class BufferingContext
         return $this->get($bufferName)->didInsert($uid);
     }
 
-    private function flush(string $templateBuffer, Scope $scope): void
+    private function flush(string $outputBuffer, Scope $scope): void
     {
+        if (!$scope->references) {
+            echo $outputBuffer;
+            return;
+        }
+
         $search = [];
         $replace = [];
         foreach ($scope->references as $ref) {
             $search[] = $ref->getKey();
             $replace[] = $ref->getValue();
         }
-        echo \str_replace($search, $replace, $templateBuffer);
+        echo \str_replace($search, $replace, $outputBuffer);
     }
 
     private function get(string $bufferName): Buffer

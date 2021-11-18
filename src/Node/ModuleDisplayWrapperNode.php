@@ -15,12 +15,11 @@ final class ModuleDisplayWrapperNode extends Node
         parent::__construct(
             ['body' => $body],
             [
+                'position' => match ($position) {
+                    self::POSITION_START, self::POSITION_END => $position,
+                },
                 'references' => $references,
                 'open' => $open,
-                'position' => match($position) {
-                    0, 1 => $position,
-                    default => throw new \LogicException(sprintf('Invalid position "%d"', $position)),
-                },
             ]
         );
     }
@@ -34,8 +33,7 @@ final class ModuleDisplayWrapperNode extends Node
                 ->subcompile($this->getNode('body'))
                 ->write("ob_start();\n")
                 ->write("try {\n")
-                ->indent()
-            ;
+                ->indent();
         } else {
             $compiler
                 ->outdent()
@@ -45,9 +43,7 @@ final class ModuleDisplayWrapperNode extends Node
                 ->write("throw \$err;\n")
                 ->outdent()
                 ->write("}\n")
-                //->write(...$this->compileLeave())
-                ->write("\$this->bufferingContext->leave(ob_get_clean());\n")
-            ;
+                ->write("\$this->bufferingContext->leave(ob_get_clean());\n");
         }
     }
 
@@ -62,20 +58,5 @@ final class ModuleDisplayWrapperNode extends Node
             "\$this->bufferingContext->enter(%s);\n",
             implode(', ', $names)
         );
-    }
-
-    private function compileLeave(): array
-    {
-        $references = $this->getAttribute('references');
-        if ($references) {
-            return [
-                "\$this->bufferingContext->leave(ob_get_clean());\n",
-            ];
-        }
-
-        return [
-            "echo ob_get_clean();\n",
-            "\$this->bufferingContext->leave();\n",
-        ];
     }
 }
