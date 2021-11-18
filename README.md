@@ -1,5 +1,7 @@
 # Twig Buffers Extension
 
+[![codecov](https://codecov.io/gh/ju1ius/twig-buffers-extension/branch/main/graph/badge.svg?token=0FPIXRXU46)](https://codecov.io/gh/ju1ius/twig-buffers-extension)
+
 This extension allows you to define buffers into which you can insert content from another part of the template or from included, embedded or child templates.
 It is similar in functionality to [Blade stacks](https://laravel.com/docs/master/blade#stacks).
 
