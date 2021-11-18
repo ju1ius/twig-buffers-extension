@@ -88,11 +88,26 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
         Assert::assertSame('foobarbaz', $result);
     }
 
-    public function testInsertingFromChildTemplate()
+    /**
+     * @dataProvider insertingWithInheritanceProvider
+     */
+    public function testInsertingWithInheritance(string $template, string $expected)
     {
         $twig = $this->createEnvironment();
-        $result = $twig->render('extends/template.html.twig');
-        Assert::assertSame('foobarbaz', $this->normalizeWhitespace($result));
+        $result = $twig->render($template);
+        Assert::assertSame($expected, $this->normalizeWhitespace($result));
+    }
+
+    public function insertingWithInheritanceProvider(): iterable
+    {
+        yield 'reference in parent, insert in child' => [
+            'extends/simple/index.html.twig',
+            'foobarbaz'
+        ];
+        yield 'reference in child, insert in parent' => [
+            'extends/ref-in-child/index.html.twig',
+            'foo'
+        ];
     }
 
     public function testInsertingFromEmbeddedTemplate()

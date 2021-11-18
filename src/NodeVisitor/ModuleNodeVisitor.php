@@ -4,7 +4,7 @@ namespace ju1ius\TwigBuffersExtension\NodeVisitor;
 
 use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
 use ju1ius\TwigBuffersExtension\Node\BufferReferenceNode;
-use ju1ius\TwigBuffersExtension\Node\ModuleBodyNode;
+use ju1ius\TwigBuffersExtension\Node\ModuleDisplayWrapperNode;
 use ju1ius\TwigBuffersExtension\Node\TemplateClassFooterNode;
 use ju1ius\TwigBuffersExtension\Node\TemplateConstructorNode;
 use Twig\Environment;
@@ -58,7 +58,27 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
 
         $references = array_unique($this->bufferReferences);
         $buffersToOpen = array_unique($this->buffersToOpen);
-        $body = $module->getNode('body');
-        $module->setNode('body', new ModuleBodyNode($body, $references, $buffersToOpen));
+
+        $displayStart = $module->getNode('display_start');
+        $module->setNode(
+            'display_start',
+            new ModuleDisplayWrapperNode(
+                ModuleDisplayWrapperNode::POSITION_START,
+                $displayStart,
+                $references,
+                $buffersToOpen,
+            )
+        );
+
+        $displayEnd = $module->getNode('display_end');
+        $module->setNode(
+            'display_end',
+            new ModuleDisplayWrapperNode(
+                ModuleDisplayWrapperNode::POSITION_END,
+                $displayEnd,
+                $references,
+                $buffersToOpen,
+            )
+        );
     }
 }
