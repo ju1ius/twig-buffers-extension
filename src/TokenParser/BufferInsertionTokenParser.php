@@ -10,7 +10,7 @@ use Twig\TokenParser\AbstractTokenParser;
 
 abstract class BufferInsertionTokenParser extends AbstractTokenParser
 {
-    public function parse(Token $token)
+    public function parse(Token $token): Node
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();

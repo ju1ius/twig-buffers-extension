@@ -3,12 +3,13 @@
 namespace ju1ius\TwigBuffersExtension\TokenParser;
 
 use ju1ius\TwigBuffersExtension\Node\BufferReferenceNode;
+use Twig\Node\Node;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
 final class BufferTokenParser extends AbstractTokenParser
 {
-    public function parse(Token $token)
+    public function parse(Token $token): Node
     {
         $stream = $this->parser->getStream();
         $name = $stream->expect(Token::NAME_TYPE)->getValue();

@@ -8,7 +8,7 @@ use Twig\Node\Node;
 
 final class TemplateConstructorNode extends Node
 {
-    public function compile(Compiler $compiler)
+    public function compile(Compiler $compiler): void
     {
         $code = <<<'PHP'
         $this->bufferingContext = $this->extensions['%s']->getContext();

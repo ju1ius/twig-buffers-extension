@@ -8,7 +8,7 @@ use Twig\Node\Node;
 
 final class TemplateClassFooterNode extends Node
 {
-    public function compile(Compiler $compiler)
+    public function compile(Compiler $compiler): void
     {
         $this->compileBuffersDeclaration($compiler);
     }

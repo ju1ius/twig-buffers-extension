@@ -30,7 +30,7 @@ abstract class BufferInsertionNode extends Node
 
     abstract protected function getMethod(): string;
 
-    public function compile(Compiler $compiler)
+    public function compile(Compiler $compiler): void
     {
         $compiler->addDebugInfo($this);
 

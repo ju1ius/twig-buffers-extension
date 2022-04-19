@@ -18,7 +18,7 @@ final class BufferReferenceNode extends Node
         parent::__construct([], ['name' => $name, 'glue' => $glue, 'final_glue' => $finalGlue], $lineno, $tag);
     }
 
-    public function compile(Compiler $compiler)
+    public function compile(Compiler $compiler): void
     {
         $name = $this->getAttribute('name');
         $glue = $this->getAttribute('glue');

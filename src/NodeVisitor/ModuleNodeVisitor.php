@@ -43,7 +43,7 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
         return $node;
     }
 
-    public function getPriority()
+    public function getPriority(): int
     {
         return -10;
     }

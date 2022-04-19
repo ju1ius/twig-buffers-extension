@@ -24,7 +24,7 @@ final class ModuleDisplayWrapperNode extends Node
         );
     }
 
-    public function compile(Compiler $compiler)
+    public function compile(Compiler $compiler): void
     {
         $position = $this->getAttribute('position');
         if ($position === self::POSITION_START) {
