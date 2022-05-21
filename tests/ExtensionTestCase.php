@@ -6,12 +6,17 @@ use ju1ius\TwigBuffersExtension\TwigBuffersExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\Loader\LoaderInterface;
 
-class ExtensionTestCase extends TestCase
+abstract class ExtensionTestCase extends TestCase
 {
-    protected function createEnvironment($cache = false): Environment
-    {
-        $loader = new FilesystemLoader(__DIR__ . '/templates');
+    protected function createEnvironment(
+        ?LoaderInterface $loader = null,
+        $cache = false,
+    ): Environment {
+        if (!$loader) {
+            $loader = new FilesystemLoader(__DIR__ . '/templates');
+        }
         $twig = new Environment($loader, [
             'cache' => $cache ? __DIR__ . '/cache' : false,
             'debug' => false,
