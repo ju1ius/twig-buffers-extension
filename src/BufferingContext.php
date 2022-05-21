@@ -2,7 +2,6 @@
 
 namespace ju1ius\TwigBuffersExtension;
 
-use JetBrains\PhpStorm\Pure;
 use ju1ius\TwigBuffersExtension\Exception\InvalidScope;
 use ju1ius\TwigBuffersExtension\Exception\UnknownBuffer;
 use SplStack;
@@ -23,7 +22,6 @@ final class BufferingContext
      */
     private readonly SplStack $scopes;
 
-    #[Pure]
     public function __construct()
     {
         $this->scopes = new SplStack();
