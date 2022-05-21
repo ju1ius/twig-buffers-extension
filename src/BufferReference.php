@@ -13,7 +13,7 @@ final class BufferReference implements Stringable
         private string|Stringable $glue = '',
         private string|Stringable|null $finalGlue = null,
     ) {
-        $hash = spl_object_hash($this->buffer);
+        $hash = spl_object_hash($this);
         $this->key = "<!-- ju1ius/buffer:{$hash} -->";
     }
 
@@ -27,7 +27,7 @@ final class BufferReference implements Stringable
         return $this->buffer->join($this->glue, $this->finalGlue);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->key;
     }
