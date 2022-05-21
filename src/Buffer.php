@@ -51,7 +51,7 @@ final class Buffer implements Stringable
 
     public function didInsert(string $uid): bool
     {
-        return isset($this->uids[$uid]);
+        return $this->uids[$uid] ?? false;
     }
 
     public function isEmpty(): bool
@@ -59,9 +59,9 @@ final class Buffer implements Stringable
         return $this->length === 0;
     }
 
-    public function join(string|Stringable $glue = '', string|Stringable $finalGlue = null): string
+    public function join(string|Stringable $glue = '', string|Stringable|null $finalGlue = null): string
     {
-        $contents = \array_merge($this->head, $this->tail);
+        $contents = [...$this->head, ...$this->tail];
         if ($finalGlue === null) {
             return \implode($glue, $contents);
         }
@@ -69,7 +69,7 @@ final class Buffer implements Stringable
         return \implode($glue, $contents) . $finalGlue . $tail;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->join();
     }

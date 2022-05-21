@@ -12,7 +12,7 @@ use Twig\TwigTest;
 
 final class TwigBuffersExtension extends AbstractExtension
 {
-    private BufferingContext $bufferingContext;
+    private readonly BufferingContext $bufferingContext;
 
     public function __construct()
     {
@@ -24,7 +24,7 @@ final class TwigBuffersExtension extends AbstractExtension
         return $this->bufferingContext;
     }
 
-    public function getTokenParsers()
+    public function getTokenParsers(): array
     {
         return [
             new BufferTokenParser(),
@@ -33,39 +33,39 @@ final class TwigBuffersExtension extends AbstractExtension
         ];
     }
 
-    public function getNodeVisitors()
+    public function getNodeVisitors(): array
     {
         return [
             new ModuleNodeVisitor(),
         ];
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
-            new TwigFunction('clear_buffer', [$this, 'clearBuffer']),
+            new TwigFunction('clear_buffer',$this->clearBuffer(...)),
         ];
     }
 
-    public function getTests()
+    public function getTests(): array
     {
         return [
-            new TwigTest('buffer', [$this, 'hasBuffer']),
-            new TwigTest('empty_buffer', [$this, 'bufferIsEmpty']),
+            new TwigTest('buffer', $this->hasBuffer(...)),
+            new TwigTest('empty_buffer', $this->bufferIsEmpty(...)),
         ];
     }
 
-    public function clearBuffer(string $name): void
+    private function clearBuffer(string $name): void
     {
         $this->bufferingContext->clear($name);
     }
 
-    public function hasBuffer(string $bufferName): bool
+    private function hasBuffer(string $bufferName): bool
     {
         return $this->bufferingContext->has($bufferName);
     }
 
-    public function bufferIsEmpty(string $bufferName): bool
+    private function bufferIsEmpty(string $bufferName): bool
     {
         return $this->bufferingContext->isEmpty($bufferName);
     }

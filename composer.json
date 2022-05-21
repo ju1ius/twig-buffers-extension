@@ -19,10 +19,13 @@
         }
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "twig/twig": "^3.0"
     },
     "config": {
         "sort-packages": true
+    },
+    "require-dev": {
+        "symfony/stopwatch": "^6.0"
     }
 }

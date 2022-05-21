@@ -6,12 +6,12 @@ use Stringable;
 
 final class BufferReference implements Stringable
 {
-    private string $key;
+    private readonly string $key;
 
     public function __construct(
-        private Buffer $buffer,
-        private string|Stringable $glue = '',
-        private string|Stringable|null $finalGlue = null,
+        private readonly Buffer $buffer,
+        private readonly string|Stringable $glue = '',
+        private readonly string|Stringable|null $finalGlue = null,
     ) {
         $hash = spl_object_hash($this);
         $this->key = "<!-- ju1ius/buffer:{$hash} -->";

@@ -3,6 +3,7 @@
 namespace ju1ius\TwigBuffersExtension;
 
 use JetBrains\PhpStorm\Pure;
+use ju1ius\TwigBuffersExtension\Exception\InvalidScope;
 use ju1ius\TwigBuffersExtension\Exception\UnknownBuffer;
 use SplStack;
 use Stringable;
@@ -14,9 +15,13 @@ final class BufferingContext
      */
     private array $buffers = [];
     /**
-     * @var SplStack<Scope>
+     * @var BufferReference[]
      */
-    private SplStack $scopes;
+    private array $references = [];
+    /**
+     * @var SplStack<string>
+     */
+    private readonly SplStack $scopes;
 
     #[Pure]
     public function __construct()
@@ -24,25 +29,26 @@ final class BufferingContext
         $this->scopes = new SplStack();
     }
 
-    public function enter(string ...$bufferNames): void
+    public function enter(string $scopeId, string ...$bufferNames): void
     {
         foreach ($bufferNames as $bufferName) {
             if (!isset($this->buffers[$bufferName])) {
                 $this->buffers[$bufferName] = new Buffer();
             }
         }
-        $this->scopes->push(new Scope());
+        $this->scopes->push($scopeId);
     }
 
-    public function leave(string $outputBuffer): void
+    public function leave(string $scopeId, string $outputBuffer): void
     {
         $scope = $this->scopes->pop();
-        match ($outputBuffer) {
-            '' => null,
-            default => $this->flush($outputBuffer, $scope),
-        };
+        if ($scope !== $scopeId) {
+            throw InvalidScope::expecting($scopeId, $scope);
+        }
         if ($this->scopes->isEmpty()) {
-            $this->buffers = [];
+            $this->flush($outputBuffer);
+        } else {
+            echo $outputBuffer;
         }
     }
 
@@ -56,9 +62,7 @@ final class BufferingContext
         string|Stringable $glue = '',
         string|Stringable|null $finalGlue = null
     ): BufferReference {
-        $scope = $this->scopes->top();
-        $buffer = $this->get($bufferName);
-        return $scope->references[] = new BufferReference($buffer, $glue, $finalGlue);
+        return $this->references[] = new BufferReference($this->get($bufferName), $glue, $finalGlue);
     }
 
     public function append(string $bufferName, $content, string $uid = null): void
@@ -89,20 +93,14 @@ final class BufferingContext
         return $this->get($bufferName)->didInsert($uid);
     }
 
-    private function flush(string $outputBuffer, Scope $scope): void
+    private function flush(string $outputBuffer): void
     {
-        if (!$scope->references) {
-            echo $outputBuffer;
-            return;
+        $pairs = [];
+        foreach ($this->references as $ref) {
+            $pairs[$ref->getKey()] = $ref->getValue();
         }
-
-        $search = [];
-        $replace = [];
-        foreach ($scope->references as $ref) {
-            $search[] = $ref->getKey();
-            $replace[] = $ref->getValue();
-        }
-        echo \str_replace($search, $replace, $outputBuffer);
+        echo \strtr($outputBuffer, $pairs);
+        $this->buffers = $this->references = [];
     }
 
     private function get(string $bufferName): Buffer
