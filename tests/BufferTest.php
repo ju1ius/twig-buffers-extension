@@ -4,11 +4,10 @@ namespace ju1ius\Tests\TwigBuffersExtension;
 
 use ju1ius\TwigBuffersExtension\Buffer;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \ju1ius\TwigBuffersExtension\Buffer
- */
+#[CoversClass(Buffer::class)]
 final class BufferTest extends TestCase
 {
     public function testIsEmpty()

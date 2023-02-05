@@ -13,7 +13,7 @@ final class TemplateClassFooterNode extends Node
         $this->compileBuffersDeclaration($compiler);
     }
 
-    private function compileBuffersDeclaration(Compiler $compiler)
+    private function compileBuffersDeclaration(Compiler $compiler): void
     {
         $code = <<<'PHP'
 

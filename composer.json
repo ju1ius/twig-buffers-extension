@@ -1,31 +1,41 @@
 {
-    "name": "ju1ius/twig-buffers-extension",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "ju1ius",
-            "email": "jules.bernable@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "ju1ius\\TwigBuffersExtension\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "ju1ius\\Tests\\TwigBuffersExtension\\": "tests/"
-        }
-    },
-    "require": {
-        "php": ">=8.1",
-        "twig/twig": "^3.0"
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "require-dev": {
-        "symfony/stopwatch": "^6.0"
+  "name": "ju1ius/twig-buffers-extension",
+  "type": "library",
+  "license": "MIT",
+  "description": "Like Blade stacks? Use Twig buffers!",
+  "keywords": [
+    "twig",
+    "buffer",
+    "stack"
+  ],
+  "authors": [
+    {
+      "name": "ju1ius",
+      "email": "jules.bernable@gmail.com"
     }
+  ],
+  "scripts": {
+    "test": "XDEBUG_MODE=off tools/phpunit.phar",
+    "coverage": "XDEBUG_MODE=off php -dpcov.enabled=1 tools/phpunit.phar --coverage-html=tmp/coverage"
+  },
+  "autoload": {
+    "psr-4": {
+      "ju1ius\\TwigBuffersExtension\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ju1ius\\Tests\\TwigBuffersExtension\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=8.1",
+    "twig/twig": "^3.0"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "require-dev": {
+    "symfony/stopwatch": "^6.0"
+  }
 }

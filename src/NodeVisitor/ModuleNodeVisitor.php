@@ -48,7 +48,7 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
         return -10;
     }
 
-    private function registerModuleBuffers(ModuleNode $module)
+    private function registerModuleBuffers(ModuleNode $module): void
     {
         $footer = $module->getNode('class_end');
         $footer->setNode('buffers', new TemplateClassFooterNode());

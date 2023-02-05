@@ -5,7 +5,6 @@ namespace ju1ius\TwigBuffersExtension\Utils;
 final class Lines
 {
     /**
-     * @param string $input
      * @return string[]
      */
     public static function split(string $input): array

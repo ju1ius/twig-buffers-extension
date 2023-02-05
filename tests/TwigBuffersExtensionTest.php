@@ -3,102 +3,101 @@
 namespace ju1ius\Tests\TwigBuffersExtension;
 use ju1ius\TwigBuffersExtension\Exception\UnknownBuffer;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class TwigBuffersExtensionTest extends ExtensionTestCase
 {
-    public function testItRendersNothingWhenBufferIsEmpty()
+    public function testItRendersNothingWhenBufferIsEmpty(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('empty.html.twig');
         Assert::assertSame('', $result);
     }
 
-    public function testInsertion()
+    public function testInsertion(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('insertion/insertion.html.twig');
         Assert::assertSame('foobarbaz', $result);
     }
 
-    public function testInsertionUsingCapture()
+    public function testInsertionUsingCapture(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('insertion/capture.html.twig');
-        Assert::assertSame('foo bar baz', $this->normalizeWhitespace($result));
+        Assert::assertSame('foo bar baz', self::normalizeWhitespace($result));
     }
 
-    public function testInsertionThrowsOnUnknownBuffer()
+    public function testInsertionThrowsOnUnknownBuffer(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $this->expectException(UnknownBuffer::class);
         $twig->render('insertion/unknown-buffer.html.twig');
     }
 
-    public function testInsertOrIgnore()
+    public function testInsertOrIgnore(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('insertion/ignore-missing.html.twig');
-        Assert::assertSame('', $this->normalizeWhitespace($result));
+        Assert::assertSame('', self::normalizeWhitespace($result));
     }
 
-    public function testInsertOrCreate()
+    public function testInsertOrCreate(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('insertion/create-missing.html.twig');
-        Assert::assertSame('<buffer>foobarbaz</buffer>', $this->normalizeWhitespace($result));
+        Assert::assertSame('<buffer>foobarbaz</buffer>', self::normalizeWhitespace($result));
     }
 
-    public function testJoin()
+    public function testJoin(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('join/join.html.twig');
-        Assert::assertSame('<buffer>foo, bar, baz</buffer>', $this->normalizeWhitespace($result));
+        Assert::assertSame('<buffer>foo, bar, baz</buffer>', self::normalizeWhitespace($result));
     }
 
-    public function testJoinWithFinalGlue()
+    public function testJoinWithFinalGlue(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('join/final-glue.html.twig');
-        Assert::assertSame('<buffer>foo, bar & baz</buffer>', $this->normalizeWhitespace($result));
+        Assert::assertSame('<buffer>foo, bar & baz</buffer>', self::normalizeWhitespace($result));
     }
 
-    public function testEscapingWorks()
+    public function testEscapingWorks(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $context = ['xss' => '<script>die();</script>'];
 
         $capturing = $twig->render('escaping/capturing.html.twig', $context);
-        Assert::assertSame('&lt;script&gt;die();&lt;/script&gt;', $this->normalizeWhitespace($capturing));
+        Assert::assertSame('&lt;script&gt;die();&lt;/script&gt;', self::normalizeWhitespace($capturing));
 
         $nonCapturing = $twig->render('escaping/non-capturing.html.twig', $context);
-        Assert::assertSame('&lt;script&gt;die();&lt;/script&gt;', $this->normalizeWhitespace($nonCapturing));
+        Assert::assertSame('&lt;script&gt;die();&lt;/script&gt;', self::normalizeWhitespace($nonCapturing));
     }
 
-    public function testInsertingFromIncludedTemplate()
+    public function testInsertingFromIncludedTemplate(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('include/template.html.twig');
         Assert::assertSame('foobarbaz', $result);
     }
 
-    public function testBufferCanBeDefinedAfterInsertion()
+    public function testBufferCanBeDefinedAfterInsertion(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('include/reversed-order.html.twig');
         Assert::assertSame('foobarbaz', $result);
     }
 
-    /**
-     * @dataProvider insertingWithInheritanceProvider
-     */
+    #[DataProvider('insertingWithInheritanceProvider')]
     public function testInsertingWithInheritance(string $template, string $expected)
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render($template);
-        Assert::assertSame($expected, $this->normalizeWhitespace($result));
+        Assert::assertSame($expected, self::normalizeWhitespace($result));
     }
 
-    public function insertingWithInheritanceProvider(): iterable
+    public static function insertingWithInheritanceProvider(): iterable
     {
         yield 'reference in parent, insert in child' => [
             'extends/simple/index.html.twig',
@@ -110,68 +109,68 @@ final class TwigBuffersExtensionTest extends ExtensionTestCase
         ];
     }
 
-    public function testInsertingFromEmbeddedTemplate()
+    public function testInsertingFromEmbeddedTemplate(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('embed/template.html.twig');
-        Assert::assertSame('foo bar baz', $this->normalizeWhitespace($result));
+        Assert::assertSame('foo bar baz', self::normalizeWhitespace($result));
     }
 
-    public function testInsertingFromEmbeddedTemplateWIthUniqueId()
+    public function testInsertingFromEmbeddedTemplateWIthUniqueId(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('embed-uid/template.html.twig');
-        Assert::assertSame('<head>HEAD</head> foo bar baz', $this->normalizeWhitespace($result));
+        Assert::assertSame('<head>HEAD</head> foo bar baz', self::normalizeWhitespace($result));
     }
 
-    public function testBuffersDoNotPersistBetweenRenders()
+    public function testBuffersDoNotPersistBetweenRenders(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $first = $twig->render('multiple-renders/first.html.twig');
-        Assert::assertSame('foobar', $this->normalizeWhitespace($first));
+        Assert::assertSame('foobar', self::normalizeWhitespace($first));
         $second = $twig->render('multiple-renders/second.html.twig');
-        Assert::assertSame('', $this->normalizeWhitespace($second));
+        Assert::assertSame('', self::normalizeWhitespace($second));
     }
 
-    public function testOneBufferWithMultipleInsertionPoints()
+    public function testOneBufferWithMultipleInsertionPoints(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('insertion/multiple-insertion-points.html.twig');
-        Assert::assertSame('HEAD -- BODY -- FOOTER', $this->normalizeWhitespace($result));
+        Assert::assertSame('HEAD -- BODY -- FOOTER', self::normalizeWhitespace($result));
     }
 
-    public function testExistingBufferCanBeCleared()
+    public function testExistingBufferCanBeCleared(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('clear/clear-existing.html.twig');
-        Assert::assertSame('baz', $this->normalizeWhitespace($result));
+        Assert::assertSame('baz', self::normalizeWhitespace($result));
     }
 
-    public function testNonExistingBufferCannotBeCleared()
+    public function testNonExistingBufferCannotBeCleared(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $this->expectException(UnknownBuffer::class);
         $twig->render('clear/clear-non-existing.html.twig');
     }
 
-    public function testIsBufferInChildTemplate()
+    public function testIsBufferInChildTemplate(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('is-buffer/child.html.twig');
-        Assert::assertSame('<buffer>child</buffer>', $this->normalizeWhitespace($result));
+        Assert::assertSame('<buffer>child</buffer>', self::normalizeWhitespace($result));
     }
 
-    public function testIsEmpty()
+    public function testIsEmpty(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('is-empty/existing.html.twig');
-        Assert::assertSame('buffer is empty', $this->normalizeWhitespace($result));
+        Assert::assertSame('buffer is empty', self::normalizeWhitespace($result));
     }
 
-    public function testIsEmptyReturnsTrueForNonExistingBuffer()
+    public function testIsEmptyReturnsTrueForNonExistingBuffer(): void
     {
-        $twig = $this->createEnvironment();
+        $twig = self::createEnvironment();
         $result = $twig->render('is-empty/non-existing.html.twig');
-        Assert::assertSame('buffer is empty', $this->normalizeWhitespace($result));
+        Assert::assertSame('buffer is empty', self::normalizeWhitespace($result));
     }
 }

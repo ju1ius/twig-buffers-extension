@@ -10,7 +10,7 @@ use Twig\Loader\LoaderInterface;
 
 abstract class ExtensionTestCase extends TestCase
 {
-    protected function createEnvironment(
+    protected static function createEnvironment(
         ?LoaderInterface $loader = null,
         $cache = false,
     ): Environment {
@@ -26,7 +26,7 @@ abstract class ExtensionTestCase extends TestCase
         return $twig;
     }
 
-    protected function normalizeWhitespace(string $input): string
+    protected static function normalizeWhitespace(string $input): string
     {
         return preg_replace('/\s+/', ' ', trim($input));
     }
