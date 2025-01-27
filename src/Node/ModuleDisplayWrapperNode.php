@@ -54,7 +54,9 @@ final class ModuleDisplayWrapperNode extends Node
                 '$this->bufferingContext->leave(%s, ob_get_clean());',
                 var_export($contextId, true),
             ))
-            ->raw("\n");
+            ->raw("\n")
+            ->subcompile($this->getNode('body'))
+        ;
     }
 
     private function compileEnter(string $contextId): string
