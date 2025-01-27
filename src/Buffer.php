@@ -29,7 +29,7 @@ final class Buffer implements Stringable
         $this->length = 0;
     }
 
-    public function append(string|Stringable $content, string $uid = null): void
+    public function append(string|Stringable $content, ?string $uid = null): void
     {
         if ($uid) {
             if (isset($this->uids[$uid])) return;
@@ -39,7 +39,7 @@ final class Buffer implements Stringable
         $this->length++;
     }
 
-    public function prepend(string|Stringable $content, string $uid = null): void
+    public function prepend(string|Stringable $content, ?string $uid = null): void
     {
         if ($uid) {
             if (isset($this->uids[$uid])) return;
