@@ -63,12 +63,12 @@ final class BufferingContext
         return $this->references[] = new BufferReference($this->get($bufferName), $glue, $finalGlue);
     }
 
-    public function append(string $bufferName, $content, string $uid = null): void
+    public function append(string $bufferName, $content, ?string $uid = null): void
     {
         $this->get($bufferName)->append($content, $uid);
     }
 
-    public function prepend(string $bufferName, $content, string $uid = null): void
+    public function prepend(string $bufferName, $content, ?string $uid = null): void
     {
         $this->get($bufferName)->prepend($content, $uid);
     }
