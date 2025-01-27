@@ -13,9 +13,8 @@ final class BufferReferenceNode extends Node
         ?AbstractExpression $glue,
         ?AbstractExpression $finalGlue,
         int $lineno = 0,
-        ?string $tag = null
     ) {
-        parent::__construct([], ['name' => $name, 'glue' => $glue, 'final_glue' => $finalGlue], $lineno, $tag);
+        parent::__construct([], ['name' => $name, 'glue' => $glue, 'final_glue' => $finalGlue], $lineno);
     }
 
     public function compile(Compiler $compiler): void

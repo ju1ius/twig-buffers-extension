@@ -18,13 +18,11 @@ abstract class BufferInsertionNode extends Node
         ?string $id,
         int $onMissing = self::ON_MISSING_ERROR,
         int $lineno = 0,
-        ?string $tag = null
     ) {
         parent::__construct(
             ['body' => $body],
             ['name' => $name, 'id' => $id, 'on_missing' => $onMissing],
             $lineno,
-            $tag,
         );
     }
 
