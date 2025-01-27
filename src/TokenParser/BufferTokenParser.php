@@ -25,7 +25,7 @@ final class BufferTokenParser extends AbstractTokenParser
 
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new BufferReferenceNode($name, $glue, $finalGlue, $token->getLine(), $this->getTag());
+        return new BufferReferenceNode($name, $glue, $finalGlue, $token->getLine());
     }
 
     public function getTag(): string

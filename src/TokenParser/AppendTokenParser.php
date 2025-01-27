@@ -20,7 +20,7 @@ final class AppendTokenParser extends BufferInsertionTokenParser
         int $onMissing,
         int $lineno,
     ): BufferInsertionNode {
-        return new AppendNode($name, $body, $id, $onMissing, $lineno, $this->getTag());
+        return new AppendNode($name, $body, $id, $onMissing, $lineno);
     }
 
 }
