@@ -4,6 +4,7 @@ namespace ju1ius\TwigBuffersExtension\TokenParser;
 
 use ju1ius\TwigBuffersExtension\Node\AppendNode;
 use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
+use ju1ius\TwigBuffersExtension\Node\MissingBufferAction;
 use Twig\Node\Node;
 
 final class AppendTokenParser extends BufferInsertionTokenParser
@@ -17,7 +18,7 @@ final class AppendTokenParser extends BufferInsertionTokenParser
         string $name,
         Node $body,
         ?string $id,
-        int $onMissing,
+        MissingBufferAction $onMissing,
         int $lineno,
     ): BufferInsertionNode {
         return new AppendNode($name, $body, $id, $onMissing, $lineno);

@@ -7,17 +7,12 @@ use Twig\Node\Node;
 
 final class ModuleDisplayWrapperNode extends Node
 {
-    const POSITION_START = 0;
-    const POSITION_END = 1;
-
-    public function __construct(int $position, Node $body, array $references, array $open)
+    public function __construct(ModuleDisplayWrapperPosition $position, Node $body, array $references, array $open)
     {
         parent::__construct(
             ['body' => $body],
             [
-                'position' => match ($position) {
-                    self::POSITION_START, self::POSITION_END => $position,
-                },
+                'position' => $position,
                 'references' => $references,
                 'open' => $open,
             ]
@@ -29,28 +24,37 @@ final class ModuleDisplayWrapperNode extends Node
     {
         $position = $this->getAttribute('position');
         $contextId = $this->getSourceContext()->getName();
-        if ($position === self::POSITION_START) {
-            $compiler
-                ->write($this->compileEnter($contextId))
-                ->subcompile($this->getNode('body'))
-                ->write("ob_start();\n")
-                ->write("try {\n")
-                ->indent();
-        } else {
-            $compiler
-                ->outdent()
-                ->write('} catch (\Throwable $err) {')->raw("\n")
-                ->indent()
-                ->write('ob_end_clean();')->raw("\n")
-                ->write('throw $err;')->raw("\n")
-                ->outdent()
-                ->write("}\n")
-                ->write(sprintf(
-                    '$this->bufferingContext->leave(%s, ob_get_clean());',
-                    var_export($contextId, true),
-                ))
-                ->raw("\n");
-        }
+        match ($position) {
+            ModuleDisplayWrapperPosition::Start => $this->compileStartNode($compiler, $contextId),
+            ModuleDisplayWrapperPosition::End => $this->compileEndNode($compiler, $contextId),
+        };
+    }
+
+    private function compileStartNode(Compiler $compiler, string $contextId): void
+    {
+        $compiler
+            ->write($this->compileEnter($contextId))
+            ->subcompile($this->getNode('body'))
+            ->write("ob_start();\n")
+            ->write("try {\n")
+            ->indent();
+    }
+
+    private function compileEndNode(Compiler $compiler, string $contextId): void
+    {
+        $compiler
+            ->outdent()
+            ->write('} catch (\Throwable $err) {')->raw("\n")
+            ->indent()
+            ->write('ob_end_clean();')->raw("\n")
+            ->write('throw $err;')->raw("\n")
+            ->outdent()
+            ->write("}\n")
+            ->write(sprintf(
+                '$this->bufferingContext->leave(%s, ob_get_clean());',
+                var_export($contextId, true),
+            ))
+            ->raw("\n");
     }
 
     private function compileEnter(string $contextId): string

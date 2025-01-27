@@ -3,6 +3,7 @@
 namespace ju1ius\TwigBuffersExtension\TokenParser;
 
 use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
+use ju1ius\TwigBuffersExtension\Node\MissingBufferAction;
 use ju1ius\TwigBuffersExtension\Node\PrependNode;
 use Twig\Node\Node;
 
@@ -17,7 +18,7 @@ final class PrependTokenParser extends BufferInsertionTokenParser
         string $name,
         Node $body,
         ?string $id,
-        int $onMissing,
+        MissingBufferAction $onMissing,
         int $lineno,
     ): BufferInsertionNode {
         return new PrependNode($name, $body, $id, $onMissing, $lineno);

@@ -3,6 +3,7 @@
 namespace ju1ius\TwigBuffersExtension\TokenParser;
 
 use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
+use ju1ius\TwigBuffersExtension\Node\MissingBufferAction;
 use Twig\Node\Node;
 use Twig\Node\PrintNode;
 use Twig\Token;
@@ -15,12 +16,12 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
 
-        $onMissing = BufferInsertionNode::ON_MISSING_ERROR;
+        $onMissing = MissingBufferAction::Error;
         if ($stream->nextIf(Token::OPERATOR_TYPE, 'or')) {
             if ($stream->nextIf(Token::NAME_TYPE, 'ignore')) {
-                $onMissing = BufferInsertionNode::ON_MISSING_IGNORE;
+                $onMissing = MissingBufferAction::Ignore;
             } else if ($stream->nextIf(Token::NAME_TYPE, 'create')) {
-                $onMissing = BufferInsertionNode::ON_MISSING_CREATE;
+                $onMissing = MissingBufferAction::Create;
             }
         }
 
@@ -52,7 +53,7 @@ abstract class BufferInsertionTokenParser extends AbstractTokenParser
         string $name,
         Node $body,
         ?string $id,
-        int $onMissing,
+        MissingBufferAction $onMissing,
         int $lineno,
     ): BufferInsertionNode;
 }

@@ -8,15 +8,11 @@ use Twig\Node\Node;
 
 abstract class BufferInsertionNode extends Node
 {
-    const ON_MISSING_ERROR = 0;
-    const ON_MISSING_IGNORE = 1;
-    const ON_MISSING_CREATE = 2;
-
     public function __construct(
         string $name,
         Node $body,
         ?string $id,
-        int $onMissing = self::ON_MISSING_ERROR,
+        MissingBufferAction $onMissing = MissingBufferAction::Error,
         int $lineno = 0,
     ) {
         parent::__construct(
@@ -38,7 +34,7 @@ abstract class BufferInsertionNode extends Node
 
         $conditions = [];
 
-        if ($onMissing === self::ON_MISSING_IGNORE) {
+        if ($onMissing === MissingBufferAction::Ignore) {
             $conditions[] = sprintf(
                 "\$this->bufferingContext->has('%s')",
                 $bufferName,

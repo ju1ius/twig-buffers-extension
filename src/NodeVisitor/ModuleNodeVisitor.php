@@ -4,7 +4,9 @@ namespace ju1ius\TwigBuffersExtension\NodeVisitor;
 
 use ju1ius\TwigBuffersExtension\Node\BufferInsertionNode;
 use ju1ius\TwigBuffersExtension\Node\BufferReferenceNode;
+use ju1ius\TwigBuffersExtension\Node\MissingBufferAction;
 use ju1ius\TwigBuffersExtension\Node\ModuleDisplayWrapperNode;
+use ju1ius\TwigBuffersExtension\Node\ModuleDisplayWrapperPosition;
 use ju1ius\TwigBuffersExtension\Node\TemplateClassFooterNode;
 use ju1ius\TwigBuffersExtension\Node\TemplateConstructorNode;
 use Twig\Environment;
@@ -33,7 +35,7 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
             $this->bufferReferences[] = $node->getAttribute('name');
         } else if (
             $node instanceof BufferInsertionNode
-            && $node->getAttribute('on_missing') === BufferInsertionNode::ON_MISSING_CREATE
+            && $node->getAttribute('on_missing') === MissingBufferAction::Create
         ) {
             $this->buffersToOpen[] = $node->getAttribute('name');
         } else if ($node instanceof ModuleNode) {
@@ -63,7 +65,7 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
         $module->setNode(
             'display_start',
             new ModuleDisplayWrapperNode(
-                ModuleDisplayWrapperNode::POSITION_START,
+                ModuleDisplayWrapperPosition::Start,
                 $displayStart,
                 $references,
                 $buffersToOpen,
@@ -74,7 +76,7 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
         $module->setNode(
             'display_end',
             new ModuleDisplayWrapperNode(
-                ModuleDisplayWrapperNode::POSITION_END,
+                ModuleDisplayWrapperPosition::End,
                 $displayEnd,
                 $references,
                 $buffersToOpen,
