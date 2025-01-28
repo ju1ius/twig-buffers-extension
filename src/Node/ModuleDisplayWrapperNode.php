@@ -2,9 +2,12 @@
 
 namespace ju1ius\TwigBuffersExtension\Node;
 
+use ju1ius\TwigBuffersExtension\Utils\Output;
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Node;
 
+#[YieldReady]
 final class ModuleDisplayWrapperNode extends Node
 {
     public function __construct(ModuleDisplayWrapperPosition $position, Node $body, array $references, array $open)
@@ -24,37 +27,38 @@ final class ModuleDisplayWrapperNode extends Node
     {
         $position = $this->getAttribute('position');
         $contextId = $this->getSourceContext()->getName();
+        $useYield = $compiler->getEnvironment()->useYield();
         match ($position) {
-            ModuleDisplayWrapperPosition::Start => $this->compileStartNode($compiler, $contextId),
-            ModuleDisplayWrapperPosition::End => $this->compileEndNode($compiler, $contextId),
+            ModuleDisplayWrapperPosition::Start => $this->compileStartNode($compiler, $contextId, $useYield),
+            ModuleDisplayWrapperPosition::End => $this->compileEndNode($compiler),
         };
     }
 
-    private function compileStartNode(Compiler $compiler, string $contextId): void
+    private function compileStartNode(Compiler $compiler, string $contextId, bool $useYield): void
     {
         $compiler
-            ->write($this->compileEnter($contextId))
             ->subcompile($this->getNode('body'))
-            ->write("ob_start();\n")
-            ->write("try {\n")
-            ->indent();
-    }
-
-    private function compileEndNode(Compiler $compiler, string $contextId): void
-    {
-        $compiler
-            ->outdent()
-            ->write('} catch (\Throwable $err) {')->raw("\n")
-            ->indent()
-            ->write('ob_end_clean();')->raw("\n")
-            ->write('throw $err;')->raw("\n")
-            ->outdent()
-            ->write("}\n")
-            ->write(sprintf(
-                '$this->bufferingContext->leave(%s, ob_get_clean());',
+            ->write($this->compileEnter($contextId))
+            ->write(\sprintf(
+                'yield $this->bufferingContext->leave(%s, ',
                 var_export($contextId, true),
             ))
-            ->raw("\n")
+            ->raw(\sprintf(
+                '\%s::%s(',
+                Output::class,
+                $useYield ? 'join' : 'capture',
+            ))
+            ->raw('(function() use (&$context, $macros, $blocks) {')->raw("\n")
+            ->indent()
+        ;
+    }
+
+    private function compileEndNode(Compiler $compiler): void
+    {
+        $compiler
+            ->write("yield from [];\n")
+            ->outdent()
+            ->write("})()));\n")
             ->subcompile($this->getNode('body'))
         ;
     }

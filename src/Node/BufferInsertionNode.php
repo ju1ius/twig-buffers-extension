@@ -4,9 +4,11 @@ namespace ju1ius\TwigBuffersExtension\Node;
 
 use ju1ius\TwigBuffersExtension\Utils\Lines;
 use Twig\Compiler;
+use Twig\Node\CaptureNode;
 use Twig\Node\Node;
+use Twig\Node\NodeCaptureInterface;
 
-abstract class BufferInsertionNode extends Node
+abstract class BufferInsertionNode extends Node implements NodeCaptureInterface
 {
     public function __construct(
         string $name,
@@ -56,18 +58,18 @@ abstract class BufferInsertionNode extends Node
             ;
         }
 
-        if ($compiler->getEnvironment()->isDebug()) {
-            // @codeCoverageIgnoreStart
-            $compiler->write("ob_start();\n");
-            // @codeCoverageIgnoreEnd
-        } else {
-            $compiler->write("ob_start(fn() => '');\n");
-        }
-
-        $compiler->subcompile($this->getNode('body'));
+        $body = new CaptureNode(
+            $this->getNode('body'),
+            $this->getNode('body')->lineno
+        );
+        $body->setAttribute('raw', true);
+        $compiler
+            ->write('$tmp = ')
+            ->subcompile($body)
+        ;
 
         $code = <<<'PHP'
-        match ($tmp = ob_get_clean()) {
+        match ($tmp) {
             '', false => null,
             default => $this->bufferingContext->%s('%s', new Markup($tmp, $this->env->getCharset()), %s),
         };

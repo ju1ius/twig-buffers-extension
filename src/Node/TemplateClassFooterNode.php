@@ -3,9 +3,11 @@
 namespace ju1ius\TwigBuffersExtension\Node;
 
 use ju1ius\TwigBuffersExtension\BufferingContext;
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Node;
 
+#[YieldReady]
 final class TemplateClassFooterNode extends Node
 {
     public function compile(Compiler $compiler): void

@@ -2,11 +2,14 @@
 
 namespace ju1ius\TwigBuffersExtension\Node;
 
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Node;
+use Twig\Node\NodeOutputInterface;
 
-final class BufferReferenceNode extends Node
+#[YieldReady]
+final class BufferReferenceNode extends Node implements NodeOutputInterface
 {
     public function __construct(
         string $name,
@@ -24,7 +27,7 @@ final class BufferReferenceNode extends Node
         $finalGlue = $this->getAttribute('final_glue');
         $compiler->addDebugInfo($this);
         $compiler
-            ->write('echo $this->bufferingContext->reference(')
+            ->write('yield $this->bufferingContext->reference(')
             ->string($name);
         if ($glue) {
             $compiler->raw(', ')->subcompile($glue);

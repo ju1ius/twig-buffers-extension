@@ -37,17 +37,13 @@ final class BufferingContext
         $this->scopes->push($scopeId);
     }
 
-    public function leave(string $scopeId, string $outputBuffer): void
+    public function leave(string $scopeId, string $outputBuffer): string
     {
         $scope = $this->scopes->pop();
         if ($scope !== $scopeId) {
             throw InvalidScope::expecting($scopeId, $scope);
         }
-        if ($this->scopes->isEmpty()) {
-            $this->flush($outputBuffer);
-        } else {
-            echo $outputBuffer;
-        }
+        return $this->scopes->isEmpty() ? $this->flush($outputBuffer) : $outputBuffer;
     }
 
     public function has(string $bufferName): bool
@@ -91,14 +87,15 @@ final class BufferingContext
         return $this->get($bufferName)->didInsert($uid);
     }
 
-    private function flush(string $outputBuffer): void
+    private function flush(string $outputBuffer): string
     {
         $pairs = [];
         foreach ($this->references as $ref) {
             $pairs[$ref->getKey()] = $ref->getValue();
         }
-        echo \strtr($outputBuffer, $pairs);
         $this->buffers = $this->references = [];
+
+        return \strtr($outputBuffer, $pairs);
     }
 
     private function get(string $bufferName): Buffer
