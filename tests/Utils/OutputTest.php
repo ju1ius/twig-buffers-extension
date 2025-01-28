@@ -53,10 +53,10 @@ final class OutputTest extends TestCase
     {
         $msg = 'output failed';
         $output = static function () use ($msg) {
-            \ob_start();
-            echo 'foo';
+            yield 'foo';
             throw new \RuntimeException($msg);
         };
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage($msg);
         Output::capture($output());
