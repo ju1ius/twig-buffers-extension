@@ -12,6 +12,7 @@ use ju1ius\TwigBuffersExtension\Node\TemplateConstructorNode;
 use Twig\Environment;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
+use Twig\Node\Nodes;
 use Twig\NodeVisitor\NodeVisitorInterface;
 
 final class ModuleNodeVisitor implements NodeVisitorInterface
@@ -61,26 +62,21 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
         $references = array_unique($this->bufferReferences);
         $buffersToOpen = array_unique($this->buffersToOpen);
 
-        $displayStart = $module->getNode('display_start');
-        $module->setNode(
-            'display_start',
+        $module->setNode('display_start', new Nodes([
+            $module->getNode('display_start'),
             new ModuleDisplayWrapperNode(
                 ModuleDisplayWrapperPosition::Start,
-                $displayStart,
                 $references,
                 $buffersToOpen,
-            )
-        );
-
-        $displayEnd = $module->getNode('display_end');
-        $module->setNode(
-            'display_end',
+            ),
+        ]));
+        $module->setNode('display_end', new Nodes([
             new ModuleDisplayWrapperNode(
                 ModuleDisplayWrapperPosition::End,
-                $displayEnd,
                 $references,
                 $buffersToOpen,
-            )
-        );
+            ),
+            $module->getNode('display_end'),
+        ]));
     }
 }

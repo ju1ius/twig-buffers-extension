@@ -5,18 +5,13 @@ namespace ju1ius\TwigBuffersExtension\Utils;
 final class Output
 {
     /**
-     * @param iterable<string> $parts
+     * @param iterable<string> $body
      * @return string
-     * @internal
      */
-    public static function join(iterable $parts): string
+    public static function join(iterable $body): string
     {
-        if (\is_array($parts)) {
-            return \implode('', $parts);
-        }
-
         $output = '';
-        foreach ($parts as $part) {
+        foreach ($body as $part) {
             $output .= $part;
         }
         return $output;
@@ -25,7 +20,7 @@ final class Output
     /**
      * @param iterable<string> $body
      * @return string
-     * @internal
+     * @throws \Throwable
      */
     public static function capture(iterable $body): string
     {

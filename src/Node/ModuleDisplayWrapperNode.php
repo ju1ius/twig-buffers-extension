@@ -10,17 +10,13 @@ use Twig\Node\Node;
 #[YieldReady]
 final class ModuleDisplayWrapperNode extends Node
 {
-    public function __construct(ModuleDisplayWrapperPosition $position, Node $body, array $references, array $open)
+    public function __construct(ModuleDisplayWrapperPosition $position, array $references, array $open)
     {
-        parent::__construct(
-            ['body' => $body],
-            [
-                'position' => $position,
-                'references' => $references,
-                'open' => $open,
-            ]
-        );
-        $this->setSourceContext($body->getSourceContext());
+        parent::__construct([], [
+            'position' => $position,
+            'references' => $references,
+            'open' => $open,
+        ]);
     }
 
     public function compile(Compiler $compiler): void
@@ -37,18 +33,13 @@ final class ModuleDisplayWrapperNode extends Node
     private function compileStartNode(Compiler $compiler, string $contextId, bool $useYield): void
     {
         $compiler
-            ->subcompile($this->getNode('body'))
-            ->write($this->compileEnter($contextId))
             ->write(\sprintf(
-                'yield $this->bufferingContext->leave(%s, ',
+                'yield $this->bufferingContext->enter(%s, %s, %s, ',
                 var_export($contextId, true),
+                $this->compileBufferNames(),
+                $useYield ? 'false' : 'true',
             ))
-            ->raw(\sprintf(
-                '\%s::%s(',
-                Output::class,
-                $useYield ? 'join' : 'capture',
-            ))
-            ->raw('(function() use (&$context, $macros, $blocks) {')->raw("\n")
+            ->raw('function() use (&$context, $macros, $blocks) {')->raw("\n")
             ->indent()
         ;
     }
@@ -58,24 +49,17 @@ final class ModuleDisplayWrapperNode extends Node
         $compiler
             ->write("yield from [];\n")
             ->outdent()
-            ->write("})()));\n")
-            ->subcompile($this->getNode('body'))
+            ->write("});\n")
         ;
     }
 
-    private function compileEnter(string $contextId): string
+    private function compileBufferNames(): string
     {
         $references = $this->getAttribute('references');
         $toOpen = $this->getAttribute('open');
         $buffers = array_unique(array_merge($references, $toOpen));
-        $args = array_map(
-            fn($name) => var_export($name, true),
-            [$contextId, ...$buffers],
-        );
+        $args = array_map(fn($name) => var_export($name, true), $buffers);
 
-        return sprintf(
-            "\$this->bufferingContext->enter(%s);\n",
-            implode(', ', $args)
-        );
+        return \sprintf('[%s]', \implode(', ', $args));
     }
 }

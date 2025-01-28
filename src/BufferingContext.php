@@ -2,10 +2,11 @@
 
 namespace ju1ius\TwigBuffersExtension;
 
-use ju1ius\TwigBuffersExtension\Exception\InvalidScope;
 use ju1ius\TwigBuffersExtension\Exception\UnknownBuffer;
+use ju1ius\TwigBuffersExtension\Utils\Output;
 use SplStack;
 use Stringable;
+use Throwable;
 
 final class BufferingContext
 {
@@ -27,23 +28,27 @@ final class BufferingContext
         $this->scopes = new SplStack();
     }
 
-    public function enter(string $scopeId, string ...$bufferNames): void
+    /**
+     * @param string $scopeId
+     * @param string[] $bufferNames
+     * @param bool $capturing
+     * @param callable(): string $input
+     * @return string
+     * @throws Throwable
+     */
+    public function enter(string $scopeId, array $bufferNames, bool $capturing, callable $input): string
     {
-        foreach ($bufferNames as $bufferName) {
-            if (!isset($this->buffers[$bufferName])) {
-                $this->buffers[$bufferName] = new Buffer();
-            }
-        }
+        $this->openBuffers(...$bufferNames);
         $this->scopes->push($scopeId);
-    }
 
-    public function leave(string $scopeId, string $outputBuffer): string
-    {
-        $scope = $this->scopes->pop();
-        if ($scope !== $scopeId) {
-            throw InvalidScope::expecting($scopeId, $scope);
-        }
-        return $this->scopes->isEmpty() ? $this->flush($outputBuffer) : $outputBuffer;
+        $output = match ($capturing) {
+            true => Output::capture($input()),
+            false => Output::join($input()),
+        };
+
+        $this->scopes->pop();
+
+        return $this->scopes->isEmpty() ? $this->flush($output) : $output;
     }
 
     public function has(string $bufferName): bool
@@ -107,5 +112,14 @@ final class BufferingContext
             'Unknown buffer "%s".',
             $bufferName,
         ));
+    }
+
+    private function openBuffers(string ...$bufferNames): void
+    {
+        foreach ($bufferNames as $bufferName) {
+            if (!isset($this->buffers[$bufferName])) {
+                $this->buffers[$bufferName] = new Buffer();
+            }
+        }
     }
 }
