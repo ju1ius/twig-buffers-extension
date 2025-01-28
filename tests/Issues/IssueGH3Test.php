@@ -4,6 +4,7 @@ namespace ju1ius\Tests\TwigBuffersExtension\Issues;
 
 use ju1ius\Tests\TwigBuffersExtension\ExtensionTestCase;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Twig\Loader\ArrayLoader;
 
 /**
@@ -18,12 +19,14 @@ final class IssueGH3Test extends ExtensionTestCase
     {% append to test 'bar' %}
     TWIG;
 
-    public function testMultipleReferencesWithDifferentArguments(): void
+    #[DataProvider('useYieldProvider')]
+    public function testMultipleReferencesWithDifferentArguments(bool $useYield): void
     {
-        $twig = $this->createEnvironment(new ArrayLoader([
-            'gh-3.twig' => self::TEMPLATE,
-        ]));
+        $twig = self::createEnvironment(
+            loader: new ArrayLoader(['gh-3.twig' => self::TEMPLATE]),
+            useYield: $useYield,
+        );
         $result = $twig->render('gh-3.twig');
-        Assert::assertSame('foobar foo,bar', $this->normalizeWhitespace($result));
+        Assert::assertSame('foobar foo,bar', self::normalizeWhitespace($result));
     }
 }
