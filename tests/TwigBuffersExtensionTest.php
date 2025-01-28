@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace ju1ius\Tests\TwigBuffersExtension;
+
 use ju1ius\TwigBuffersExtension\Exception\UnknownBuffer;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;

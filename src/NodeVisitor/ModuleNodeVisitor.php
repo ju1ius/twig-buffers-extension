@@ -48,7 +48,9 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
 
     public function getPriority(): int
     {
-        return -10;
+        // Priority should be [-10..10], but we REALLY
+        // need to be the last to process the AST, so we have to cheat...
+        return 100;
     }
 
     private function registerModuleBuffers(ModuleNode $module): void
@@ -62,6 +64,8 @@ final class ModuleNodeVisitor implements NodeVisitorInterface
         $references = array_unique($this->bufferReferences);
         $buffersToOpen = array_unique($this->buffersToOpen);
 
+        // Ideally we would just wrap the `body` node,
+        // but that would break our inheritance support...
         $module->setNode('display_start', new Nodes([
             $module->getNode('display_start'),
             new ModuleDisplayWrapperNode(
